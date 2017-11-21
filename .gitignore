@@ -1,4 +1,5 @@
 node_modules
+FCMconsole-*
 logs/*
 !.gitkeep
 bower_components/
