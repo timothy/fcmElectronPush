@@ -82,10 +82,13 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
 
 
         $scope.submit = function (formData) {
+            if (!formData.$valid) return;
 
             dataPayload.to = "/topics/" + $scope.theForm.topic;
             dataPayload.notification.title = $scope.theForm.title;
             dataPayload.notification.body = $scope.theForm.body;
+            dataPayload.notification.sound = ($scope.theForm.sound) ? $scope.theForm.sound: "default";
+            dataPayload.notification.icon = ($scope.theForm.icon) ? $scope.theForm.icon: "";
             dataPayload.data = $scope.dataObj;
 
             req.data = dataPayload;
@@ -93,7 +96,7 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
 
             console.log(req);
             $scope.hasTried = true;
-            if (formData.$valid) {
+
                 $scope.loading = true;
                 $http(req).then(function (success) {
                     $scope.loading = false;
@@ -106,20 +109,28 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
                     $scope.pushHandle.message = "The following Error Occurred:" + JSON.stringify(error);
                     $scope.pushHandle.color = "red";
                 });
-            }
+
         };
 
+        var temp = {key:[]};//store the last instance
 
         $scope.addData = function (key,value) {
+            if(!key) return;
+
             $scope.dataObj[key] = value;
+            temp.key.push(key);
             console.log($scope.dataObj);
             $scope.theForm.data.key = "";
             $scope.theForm.data.value = "";
             $scope.prettyJson = library.json.prettyPrint($scope.dataObj);
         };
 
-        $scope.deleteLast = function (key) {
-           delete $scope.dataObj[key];
+
+        $scope.deleteLast = function () {
+            if(!temp.key.length) return;
+
+            delete $scope.dataObj[temp.key.pop()];
+            $scope.prettyJson = library.json.prettyPrint($scope.dataObj);
         };
 
     }]);
