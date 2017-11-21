@@ -10,7 +10,7 @@
         <span class="error" ng-show="myForm.topic.$error.required && hasTried">Required!</span>
         <span class="pure-form-message">This is a required field.</span>
 
-        <div ng-show="" class="loader"></div>
+        <div ng-show="loading" class="loader"></div>
 
         Title: <input placeholder="Title of message" name="title" ng-model="theForm.title" required>
         <span class="error" ng-show="myForm.title.$error.required && hasTried">Required!</span>
@@ -19,6 +19,11 @@
         Body: <input placeholder="Body of message" name="body" ng-model="theForm.body" required>
         <span class="error" ng-show="myForm.body.$error.required && hasTried">Required!</span>
         <span class="pure-form-message">This is a required field.</span>
+
+
+        Sound: <input placeholder="Notification sound" name="sound" ng-model="theForm.sound">
+
+        Icon: <input placeholder="The icon for Android notifications" name="icon" ng-model="theForm.icon">
 
         <label for="remember" class="pure-checkbox">
             <input id="remember" type="checkbox" ng-model="checkboxModel.remember"> Remember my data

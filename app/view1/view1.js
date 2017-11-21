@@ -26,12 +26,12 @@ angular.module('myApp.view1', ['ngRoute'])
         };
 
         var dataPayload = {
-            "to": "/topics/" + $scope.theForm.topic,
+            "to": "/topics/all",
             "content_available": true,
             "priority": "high",
             "notification": {
-                "title": $scope.theForm.title,
-                "body": $scope.theForm.body,
+                "title": "default",
+                "body": "default",
                 "sound": "default",
                 "click_action": "FCM_PLUGIN_ACTIVITY",
                 "icon": "lu_today_icon_android"
@@ -47,7 +47,7 @@ angular.module('myApp.view1', ['ngRoute'])
             method: 'POST',
             url: 'https://fcm.googleapis.com/fcm/send',
             headers: {
-                'Authorization': 'key=' + $scope.theForm.authKey,
+                'Authorization': 'key=',
                 'Content-Type': 'application/json'
             },
             data: dataPayload
@@ -57,35 +57,12 @@ angular.module('myApp.view1', ['ngRoute'])
 
         $scope.submit = function (formData) {
 
-             dataPayload = {
-                "to": "/topics/" + $scope.theForm.topic,
-                "content_available": true,
-                "priority": "high",
-                "notification": {
-                    "title": $scope.theForm.title,
-                    "body": $scope.theForm.body,
-                    "sound": "default",
-                    "click_action": "FCM_PLUGIN_ACTIVITY",
-                    "icon": "lu_today_icon_android"
-                },
-                "data": {
-                    "title": "Title test",
-                    "msg": "Text of the test",
-                    "code": 2
-                }
-            };
+            dataPayload.to = "/topics/" + $scope.theForm.topic;
+            dataPayload.notification.title = $scope.theForm.title;
+            dataPayload.notification.body = $scope.theForm.body;
 
-             req = {
-                method: 'POST',
-                url: 'https://fcm.googleapis.com/fcm/send',
-                headers: {
-                    'Authorization': 'key=' + $scope.theForm.authKey,
-                    'Content-Type': 'application/json'
-                },
-                data: dataPayload
-            };
-
-
+            req.data = dataPayload;
+            req.headers.Authorization = 'key=' + $scope.theForm.authKey;
 
             console.log(req);
             $scope.hasTried = true;
