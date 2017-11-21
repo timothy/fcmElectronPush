@@ -1,0 +1,31 @@
+<form name="myForm" class="pure-form pure-form-aligned myForm">
+    <fieldset>
+        <legend>FireBase Push Notifications Console</legend>
+
+        Authorization: <input placeholder="Server Auth Key" name="authKey" ng-model="theForm.authKey" required>
+        <span class="error" ng-show="myForm.authKey.$error.required && hasTried">Required!</span>
+        <span class="pure-form-message">This is a required field.</span>
+
+        Topic: <input placeholder="Topic i.e. all" name="topic" ng-model="theForm.topic" required>
+        <span class="error" ng-show="myForm.topic.$error.required && hasTried">Required!</span>
+        <span class="pure-form-message">This is a required field.</span>
+
+        <div ng-show="" class="loader"></div>
+
+        Title: <input placeholder="Title of message" name="title" ng-model="theForm.title" required>
+        <span class="error" ng-show="myForm.title.$error.required && hasTried">Required!</span>
+        <span class="pure-form-message">This is a required field.</span>
+
+        Body: <input placeholder="Body of message" name="body" ng-model="theForm.body" required>
+        <span class="error" ng-show="myForm.body.$error.required && hasTried">Required!</span>
+        <span class="pure-form-message">This is a required field.</span>
+
+        <label for="remember" class="pure-checkbox">
+            <input id="remember" type="checkbox" ng-model="checkboxModel.remember"> Remember my data
+        </label>
+
+        <button ng-click="submit(myForm)" type="submit" class="pure-button pure-button-primary">Send Push Notification</button>
+    </fieldset>
+
+    <div ng-style="{color:pushHandle.color}"> {{pushHandle.message}}</div>
+</form>
