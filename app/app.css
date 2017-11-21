@@ -24,6 +24,9 @@
   padding-right: 0.3em;
 }
 
+.inline {
+  display: inline !important;
+}
 
 /*.myForm {
   margin-left: auto;
@@ -37,6 +40,7 @@
   margin-right: auto;
   margin-left: auto;
 }
+
 @media (min-width: 768px) {
   .pure-g {
     width: 750px;
@@ -74,4 +78,20 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+pre {
+  background-color: ghostwhite;
+  border: 1px solid silver;
+  padding: 10px 20px;
+  margin: 20px;
+}
+.json-key {
+  color: brown;
+}
+.json-value {
+  color: navy;
+}
+.json-string {
+  color: olive;
 }

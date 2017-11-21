@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.view1', ['ngRoute'])
+angular.module('myApp.view1', ['ngRoute','ngSanitize'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/view1', {
@@ -10,19 +10,46 @@ angular.module('myApp.view1', ['ngRoute'])
     }])
 
     .controller('View1Ctrl', ['$http', '$scope', function ($http, $scope) {
+        if (!library)
+            var library = {};
+
+        library.json = {
+            replacer: function(match, pIndent, pKey, pVal, pEnd) {
+                var key = '<span class=json-key>';
+                var val = '<span class=json-value>';
+                var str = '<span class=json-string>';
+                var r = pIndent || '';
+                if (pKey)
+                    r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
+                if (pVal)
+                    r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+                return r + (pEnd || '');
+            },
+            prettyPrint: function(obj) {
+                var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+                return JSON.stringify(obj, null, 3)
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, library.json.replacer);
+            }
+        };
+
 
         $scope.checkboxModel = {
             remember: true
         };
+        $scope.dataObj = {};
+        $scope.prettyJson = false;
 
         $scope.hasTried = false;
         $scope.loading = false;
-        $scope.pushHandle = {message: ""};
+        $scope.pushHandle = {message: ''};
         $scope.theForm = {
             authKey:'',
             topic: 'all',
             title: '',
-            body:''
+            body:'',
+            data: {key:'',value:''}
         };
 
         var dataPayload = {
@@ -54,12 +81,12 @@ angular.module('myApp.view1', ['ngRoute'])
         };
 
 
-
         $scope.submit = function (formData) {
 
             dataPayload.to = "/topics/" + $scope.theForm.topic;
             dataPayload.notification.title = $scope.theForm.title;
             dataPayload.notification.body = $scope.theForm.body;
+            dataPayload.data = $scope.dataObj;
 
             req.data = dataPayload;
             req.headers.Authorization = 'key=' + $scope.theForm.authKey;
@@ -80,6 +107,19 @@ angular.module('myApp.view1', ['ngRoute'])
                     $scope.pushHandle.color = "red";
                 });
             }
+        };
+
+
+        $scope.addData = function (key,value) {
+            $scope.dataObj[key] = value;
+            console.log($scope.dataObj);
+            $scope.theForm.data.key = "";
+            $scope.theForm.data.value = "";
+            $scope.prettyJson = library.json.prettyPrint($scope.dataObj);
+        };
+
+        $scope.deleteLast = function (key) {
+           delete $scope.dataObj[key];
         };
 
     }]);
