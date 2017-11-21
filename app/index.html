@@ -22,6 +22,7 @@
   <![endif]-->
   <br>
   <div ng-view></div>
+  <br>
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
@@ -34,5 +35,10 @@
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>
   <script src="components/version/interpolate-filter.js"></script>
+
+  <script>
+      // You can also require other files to run in this process
+      require('./renderer.js');
+  </script>
 </body>
 </html>
