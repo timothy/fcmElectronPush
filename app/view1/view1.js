@@ -1,39 +1,17 @@
 'use strict';
 
-angular.module('myApp.view1', ['ngRoute','ngSanitize'])
+angular.module('myApp.view1', ['ngRoute', 'ngSanitize'])
 
-    .config(['$routeProvider', function ($routeProvider) {
+    .config(['$routeProvider', ($routeProvider) => {
         $routeProvider.when('/view1', {
             templateUrl: 'view1/view1.html',
             controller: 'View1Ctrl'
         });
     }])
 
-    .controller('View1Ctrl', ['$http', '$scope', function ($http, $scope) {
-        if (!library)
-            var library = {};
+    .controller('View1Ctrl', ['$http', '$scope', 'jsonWebView', ($http, $scope, jsonWebView) => {
 
-        library.json = {
-            replacer: function(match, pIndent, pKey, pVal, pEnd) {
-                var key = '<span class=json-key>';
-                var val = '<span class=json-value>';
-                var str = '<span class=json-string>';
-                var r = pIndent || '';
-                if (pKey)
-                    r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
-                if (pVal)
-                    r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
-                return r + (pEnd || '');
-            },
-            prettyPrint: function(obj) {
-                var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
-                return JSON.stringify(obj, null, 3)
-                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
-                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                    .replace(jsonLine, library.json.replacer);
-            }
-        };
-
+        console.log(jsonWebView);
 
         $scope.checkboxModel = {
             remember: true
@@ -45,14 +23,14 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
         $scope.loading = false;
         $scope.pushHandle = {message: ''};
         $scope.theForm = {
-            authKey:'',
+            authKey: '',
             topic: 'all',
             title: '',
-            body:'',
-            data: {key:'',value:''}
+            body: '',
+            data: {key: '', value: ''}
         };
 
-        var dataPayload = {
+        let dataPayload = {
             "to": "/topics/all",
             "content_available": true,
             "priority": "high",
@@ -70,7 +48,7 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
             }
         };
 
-        var req = {
+        let req = {
             method: 'POST',
             url: 'https://fcm.googleapis.com/fcm/send',
             headers: {
@@ -81,14 +59,14 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
         };
 
 
-        $scope.submit = function (formData) {
+        $scope.submit = (formData) => {
             if (!formData.$valid) return;
 
             dataPayload.to = "/topics/" + $scope.theForm.topic;
             dataPayload.notification.title = $scope.theForm.title;
             dataPayload.notification.body = $scope.theForm.body;
-            dataPayload.notification.sound = ($scope.theForm.sound) ? $scope.theForm.sound: "default";
-            dataPayload.notification.icon = ($scope.theForm.icon) ? $scope.theForm.icon: "";
+            dataPayload.notification.sound = ($scope.theForm.sound) ? $scope.theForm.sound : "default";
+            dataPayload.notification.icon = ($scope.theForm.icon) ? $scope.theForm.icon : "";
             dataPayload.data = $scope.dataObj;
 
             req.data = dataPayload;
@@ -97,40 +75,66 @@ angular.module('myApp.view1', ['ngRoute','ngSanitize'])
             console.log(req);
             $scope.hasTried = true;
 
-                $scope.loading = true;
-                $http(req).then(function (success) {
-                    $scope.loading = false;
-                 console.log(success);
-                    $scope.pushHandle.message = "Push Successful";
-                    $scope.pushHandle.color = "green";
-                }, function (error) {
-                    $scope.loading = false;
-                    console.log(error);
-                    $scope.pushHandle.message = "The following Error Occurred:" + JSON.stringify(error);
-                    $scope.pushHandle.color = "red";
-                });
+            $scope.loading = true;
+            $http(req).then((success) => {
+                $scope.loading = false;
+                console.log(success);
+                $scope.pushHandle.message = "Push Successful";
+                $scope.pushHandle.color = "green";
+            }, (error) => {
+                $scope.loading = false;
+                console.log(error);
+                $scope.pushHandle.message = "The following Error Occurred:" + JSON.stringify(error);
+                $scope.pushHandle.color = "red";
+            });
 
         };
 
-        var temp = {key:[]};//store the last instance
+        let temp = {key: []};//store the last instance
 
-        $scope.addData = function (key,value) {
-            if(!key) return;
+        $scope.addData = (key, value) => {
+            if (!key) return;
 
             $scope.dataObj[key] = value;
             temp.key.push(key);
             console.log($scope.dataObj);
             $scope.theForm.data.key = "";
             $scope.theForm.data.value = "";
-            $scope.prettyJson = library.json.prettyPrint($scope.dataObj);
+            $scope.prettyJson = jsonWebView.prettyPrint($scope.dataObj);
         };
 
 
-        $scope.deleteLast = function () {
-            if(!temp.key.length) return;
+        $scope.deleteLast = () => {
+            if (!temp.key.length) return;
 
             delete $scope.dataObj[temp.key.pop()];
-            $scope.prettyJson = library.json.prettyPrint($scope.dataObj);
+            $scope.prettyJson = jsonWebView.prettyPrint($scope.dataObj);
         };
 
-    }]);
+    }])
+    .factory("jsonWebView", () => {
+
+           let replacer =  (match, pIndent, pKey, pVal, pEnd) => {
+                let key = '<span class=json-key>';
+                let val = '<span class=json-value>';
+                let str = '<span class=json-string>';
+                let r = pIndent || '';
+                if (pKey)
+                    r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
+                if (pVal)
+                    r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+                return r + (pEnd || '');
+            };
+
+            let prettyPrint =  (obj) => {
+                let jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+                return JSON.stringify(obj, null, 3)
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, replacer);
+            };
+
+            return {
+                prettyPrint: prettyPrint
+            }
+    });
