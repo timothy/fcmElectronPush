@@ -1,6 +1,6 @@
 # FireBase Push Notification Console
 
-Simple app for sending push notifications using the FireBase rest api
+Electron GUI for sending push notifications to Android and IOS using the FireBase rest api.
 
 
 ### Prerequisites
